@@ -1,0 +1,16 @@
+{
+  "build": {
+    "core": "esp32",
+    "mcu": "esp32wroom",
+    "variant": "pinouts"
+  },
+  "frameworks": ["arduino", "espidf"],
+  "name": "flap",
+  "upload": {
+    "maximum_ram_size": 327680,
+    "maximum_size": 16777216,
+    "require_upload_port": true
+  },
+  "url": "https://github.com/Teapot174/ESP-HACK",
+  "vendor": "Teapot174"
+}
