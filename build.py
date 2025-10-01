@@ -1,103 +1,93 @@
+import os
+import subprocess
 from pathlib import Path
-from SCons.Script import Import
+import sys
 
-# Import PlatformIO's SCons environment
 Import("env")
-senv = env  # avoid shadowing with the action's 'env' parameter
 
-# Optional: keep your extra flag
-senv.Append(CXXFLAGS=["-Wno-conversion-null"])
+def merge_binaries(source, target, env):
+    # Get project directory and name
+    project_dir = Path(env["PROJECT_DIR"])
+    project_name = "FLAP"
+    merged_bin = project_dir / f"{project_name}.bin"
 
-# ---- Detect MCU and map bootloader offsets ----
-board_config = senv.BoardConfig()
-mcu = (board_config.get("build.mcu") or senv.get("BOARD_MCU") or "").lower()
+    # Paths to source files
+    build_dir = Path(env.subst("$BUILD_DIR"))
+    firmware_bin = build_dir / "firmware.bin"
+    bootloader_bin = build_dir / "bootloader.bin"
+    partitions_bin = build_dir / "partitions.bin"
 
-BOOT_OFFSETS = {
-    "esp32":   0x1000,  # ESP32
-    "esp32s3": 0x0000,  # ESP32-S3
-    "esp32c5": 0x2000,  # ESP32-C5
-}
-boot_offset = BOOT_OFFSETS.get(mcu, 0x0000)  # safe fallback
+    # Path to esptool.exe in project root
+    esptool_exe = project_dir / "esptool.exe"
 
-# Default offsets (adjust if your partitions.csv uses custom addresses)
-PART_TABLE_OFFSET = 0x8000
-APP_OFFSET        = 0x10000
+    # Check if esptool.exe exists
+    if not esptool_exe.exists():
+        print(f"❌ CRITICAL ERROR: esptool.exe not found in project root")
+        print(f"   Place esptool.exe here: {project_dir}")
+        sys.exit(1)
 
-# Paths
-build_dir = Path(senv.subst("$BUILD_DIR"))
-proj_dir  = Path(senv.subst("$PROJECT_DIR"))
-pioenv    = senv.subst("${PIOENV}")
+    # Check if source files exist
+    missing_files = []
+    if not firmware_bin.exists(): missing_files.append(str(firmware_bin))
+    if not bootloader_bin.exists(): missing_files.append(str(bootloader_bin))
+    if not partitions_bin.exists(): missing_files.append(str(partitions_bin))
 
-boot_bin = build_dir / "bootloader.bin"
-part_bin = build_dir / "partitions.bin"
-app_bin  = build_dir / "firmware.bin"
+    if missing_files:
+        print(f"❌ Error: Missing files for merging:")
+        for f in missing_files: print(f" - {f}")
+        print("Ensure the build completed successfully")
+        sys.exit(1)
 
-out_bin  = proj_dir / f"Bruce-{pioenv}.bin"
-
-# Esptool from PlatformIO + Python executable
-esptool_pkg = senv.PioPlatform().get_package_dir("tool-esptoolpy")
-esptool_py  = str(Path(esptool_pkg) / "esptool")
-python_exe  = senv.get("PYTHONEXE", "python")
-
-chip_arg = mcu if mcu else "esp32"
-
-def _merge_bins_callback(target, source, env):
-    """
-    Post-action callback executed after firmware.bin is built.
-    Merges bootloader, partitions, and app into a single binary.
-    NOTE: This function signature must be (target, source, env) so SCons can call it.
-    """
-    # Check files
-    missing = [p for p in [boot_bin, part_bin, app_bin] if not p.exists()]
-    if missing:
-        print("[merge_bin] Missing files, merge aborted:")
-        for p in missing:
-            print(f" - {p}")
-        return
-
-    # Quote paths for Windows safety
-    def q(p): return f"\"{p}\""
-
-    cmd = " ".join([
-        "pio pkg exec -p \"tool-esptoolpy\" -- esptool.py",
-        "--chip", chip_arg,
+    # Command for esptool.exe
+    cmd = [
+        str(esptool_exe),
+        "--chip", "esp32",
         "merge_bin",
-        "--output", q(out_bin),
-        hex(boot_offset), q(boot_bin),
-        hex(PART_TABLE_OFFSET), q(part_bin),
-        hex(APP_OFFSET), q(app_bin),
-    ])
+        "-o", str(merged_bin),
+        "0x1000", str(bootloader_bin),
+        "0x8000", str(partitions_bin),
+        "0x10000", str(firmware_bin)
+    ]
 
-    print("[merge_bin] Merging binaries:")
-    print(" ", cmd)
-    rc = env.Execute(cmd)
-    if rc != 0:
-        print(f"[merge_bin] Failed with exit code {rc}")
-    else:
-        try:
-            size = out_bin.stat().st_size
-        except FileNotFoundError:
-            size = 0
-        print(f"[merge_bin] Success -> {out_bin} ({size} bytes)")
+    print("🔨 Merging binary files:")
+    print(f" - Bootloader:  {bootloader_bin} @ 0x1000")
+    print(f" - Partitions:  {partitions_bin} @ 0x8000")
+    print(f" - Firmware:    {firmware_bin} @ 0x10000")
+    print(f"⚙️ Using: {esptool_exe}")
 
-# Automatically run after firmware.bin is generated
-senv.AddPostAction(str(app_bin), _merge_bins_callback)
+    try:
+        # Execute command
+        result = subprocess.run(
+            cmd,
+            check=True,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+            text=True,
+            shell=True
+        )
 
-# Optional manual target: depend on the three binaries and run the same callback
-# Wrap it in a lambda so SCons can call it without (target, source, env) if needed.
-senv.AddCustomTarget(
-    name="build-firmware",
-    dependencies=[str(boot_bin), str(part_bin), str(app_bin)],
-    actions=[_merge_bins_callback],
-    title="Build Firmware (merge)",
-    description="Merge bootloader + partitions + app into a single .bin file"
-)
+        # Check output file size
+        if merged_bin.exists():
+            size = os.path.getsize(merged_bin) / 1024
+            print(f"\n✅ Successfully created merged file: {merged_bin}")
+            print(f"📏 File size: {size:.2f} KB")
+            print(f"⚡ To flash, use: esptool.exe write_flash 0x0 \"{merged_bin}\"")
+        else:
+            print("❌ Error: Merged file was not created")
+            if result.stderr:
+                print("ℹ️ esptool error:")
+                print(result.stderr)
+            sys.exit(1)
 
-# Keep your upload-nobuild helper
-senv.AddCustomTarget(
-    name="upload-nobuild",
-    dependencies=None,
-    actions=[f"platformio run -t upload -t nobuild -e {pioenv}"],
-    title="Upload Nobuild",
-    description="Run upload without rebuilding"
-)
+    except subprocess.CalledProcessError as e:
+        print(f"❌ Error running esptool.exe (code {e.returncode}):")
+        print(e.stderr)
+        sys.exit(1)
+    except Exception as e:
+        print(f"❌ Unknown error: {str(e)}")
+        import traceback
+        traceback.print_exc()
+        sys.exit(1)
+
+# Add script as post-action after build
+env.AddPostAction("$BUILD_DIR/${PROGNAME}.bin", merge_binaries)
