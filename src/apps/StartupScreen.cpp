@@ -34,10 +34,12 @@ void StartupScreen::render(Display* display) {
     
     // Draw "HAKLES" text in logo
     display->setTextSize(1);
+    display->setTextColor(1, 0);
     display->drawCenteredString(20, "HAKLES");
     
     // Draw subtitle
     display->setTextSize(1);
+    display->setTextColor(1, 0);
     display->drawCenteredString(46, "Security Device");
     
     // Draw animated progress bar

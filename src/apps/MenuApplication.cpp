@@ -27,7 +27,11 @@ void MenuApplication::render(Display* display) {
     display->drawString(2, 2, "MENU");
     
     // Draw time (placeholder)
+    display->setTextColor(0, 1);
+    display->setTextSize(1);
     display->drawString(95, 2, "12:34");
+    
+    // Reset to normal colors
     display->setTextColor(1, 0);
     
     // Draw separator line

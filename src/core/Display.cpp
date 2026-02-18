@@ -65,11 +65,7 @@ void Display::fillCircle(int16_t x0, int16_t y0, int16_t r, uint16_t color) {
 }
 
 void Display::drawString(int16_t x, int16_t y, const char* text) {
-    // Set text color and size
-    display_inst.setTextColor(SH110X_WHITE);
-    display_inst.setTextSize(1);
-    
-    // Set cursor position
+    // Set cursor position (color should be set before calling this)
     display_inst.setCursor(x, y);
     
     // Print the text
@@ -77,11 +73,7 @@ void Display::drawString(int16_t x, int16_t y, const char* text) {
 }
 
 void Display::drawString(int16_t x, int16_t y, String text) {
-    // Set text color and size
-    display_inst.setTextColor(SH110X_WHITE);
-    display_inst.setTextSize(1);
-    
-    // Set cursor position
+    // Set cursor position (color should be set before calling this)
     display_inst.setCursor(x, y);
     
     // Print the text
