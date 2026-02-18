@@ -1,3 +1,0 @@
-# Required Python packages for the ESP32 GUI controller
-pyserial>=3.5
-# tkinter is required for the GUI but is included with Python

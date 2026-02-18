@@ -7,6 +7,8 @@
 class StartupScreen : public Application {
 private:
     bool running;
+    unsigned long startTime;
+    uint8_t animationFrame;
     
 public:
     StartupScreen();

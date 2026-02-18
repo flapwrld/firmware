@@ -5,27 +5,49 @@ extern ApplicationManager appManager;
 
 StartupScreen::StartupScreen() {
     running = false;
+    startTime = 0;
+    animationFrame = 0;
 }
 
 void StartupScreen::initialize() {
     running = true;
+    startTime = millis();
+    animationFrame = 0;
 }
 
 void StartupScreen::update() {
-    // Nothing to update in startup screen
+    // Update animation frame
+    unsigned long elapsed = millis() - startTime;
+    animationFrame = (elapsed / 50) % 100; // 50ms per frame, loop at 100
 }
 
 void StartupScreen::render(Display* display) {
-    // Clear display
     display->clear();
     
-    // Draw startup bitmap (using fileIcon as example, can be changed to a custom logo)
-    display->drawBitmap(56, 24, fileIcon, FILE_ICON_WIDTH, FILE_ICON_HEIGHT, 1);
+    // Calculate progress (0-100 over 2 seconds)
+    unsigned long elapsed = millis() - startTime;
+    uint8_t progress = (uint8_t)min((unsigned long)100, (elapsed * 100) / 2000);
     
-    // Draw instruction text
-    display->drawString(20, 50, "Press OK to continue");
+    // Draw modern logo area with rounded rectangle
+    display->fillRoundRect(34, 10, 60, 30, 8, 1);
+    display->fillRoundRect(36, 12, 56, 26, 6, 0);
     
-    // Update display
+    // Draw "HAKLES" text in logo
+    display->setTextSize(1);
+    display->drawCenteredString(20, "HAKLES");
+    
+    // Draw subtitle
+    display->setTextSize(1);
+    display->drawCenteredString(46, "Security Device");
+    
+    // Draw animated progress bar
+    display->drawProgressBar(24, 54, 80, 6, progress);
+    
+    // Pulsing dot animation
+    if (animationFrame % 20 < 10) {
+        display->fillCircle(64, 58, 1, 1);
+    }
+    
     display->update();
 }
 
@@ -51,7 +73,7 @@ void StartupScreen::onRightButton() {
 }
 
 void StartupScreen::onOkButton() {
-    // Switch to the first application in the menu (index 1, assuming index 0 is this startup screen)
+    // Switch to menu
     appManager.switchToApplication(1);
 }
 

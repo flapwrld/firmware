@@ -1,234 +1,341 @@
-# HAKLESMY - Flipper Zero-like Device
+# HAKLES - ESP32 Security Research Device
 
-![Project Status](https://img.shields.io/badge/status-completed-brightgreen)
 ![Platform](https://img.shields.io/badge/platform-ESP32-blue)
 ![Display](https://img.shields.io/badge/display-SH1106-yellow)
 ![License](https://img.shields.io/badge/license-MIT-green)
 
-A Flipper Zero-inspired multi-application device based on ESP32 with SH1106 OLED display. This project implements a firmware with multiple applications including a DOOM-like game, WiFi scanner, file explorer, and more.
+Устройство для исследования безопасности на базе ESP32 с дисплеем SH1106 OLED. Вдохновлено Flipper Zero.
 
-## Features
+## Возможности
 
-- Carousel-style application menu
-- DOOM-like pseudo-3D game
-- WiFi network scanner
-- SD card file explorer
-- Virtual pet (Tamagotchi)
-- Stopwatch
-- Calculator
-- Custom bitmap icons for all applications
-- Intuitive button navigation
+- Современный минималистичный интерфейс
+- Анимированный стартовый экран с прогресс-баром
+- Карточный дизайн меню с закругленными углами
+- Статус-бар с информацией
+- WiFi сканирование и атаки (deauth, packet capture, evil portal)
+- Bluetooth сканирование и атаки
+- Работа с радиомодулем CC1101
+- ИК-передатчик (выключение телевизоров)
+- Файловый менеджер (SD карта)
+- Бинарный калькулятор
+- Секундомер
+- Модульная архитектура приложений
 
-## Hardware Requirements
+## Аппаратные требования
 
-- ESP32 development board
-- SH1106 OLED display (128x64 pixels)
-- MicroSD card module
-- 7 push buttons
-- Jumper wires
-- Breadboard (optional)
+- ESP32 (ESP32-WROOM-32)
+- SH1106 OLED дисплей (128x64)
+- MicroSD карта модуль
+- 7 кнопок
+- CC1101 модуль (опционально)
+- ИК светодиод (опционально)
 
-## Wiring Diagram
+## Подключение
 
+### Дисплей SH1106
 ```
-ESP32         SH1106 Display
------         --------------
+ESP32         SH1106
 GPIO21  ----> SDA
 GPIO22  ----> SCL
 3.3V    ----> VCC
 GND     ----> GND
+```
 
-ESP32         SD Card Module
------         --------------
+### SD карта
+```
+ESP32         SD Module
 GPIO23  ----> MOSI
 GPIO19  ----> MISO
 GPIO18  ----> SCK
 GPIO5   ----> CS
 3.3V    ----> VCC
 GND     ----> GND
-
-ESP32         Buttons
------         -------
-GPIO12  ----> UP Button
-GPIO14  ----> DOWN Button
-GPIO27  ----> LEFT Button
-GPIO26  ----> RIGHT Button
-GPIO25  ----> OK Button
-GPIO33  ----> BACK Button
-RST     ----> RESET Button
 ```
 
-## Installation
+### Кнопки
+```
+ESP32         Кнопки
+GPIO12  ----> UP
+GPIO13  ----> DOWN
+GPIO14  ----> LEFT
+GPIO15  ----> RIGHT
+GPIO16  ----> OK
+GPIO17  ----> BACK
+GPIO18  ----> FUNCTION
+```
 
-1. Clone this repository:
-   ```bash
-   git clone https://github.com/yourusername/haklesmy.git
-   cd haklesmy
-   ```
+## Установка
 
-2. Install PlatformIO Core or use PlatformIO IDE
+1. Клонируйте репозиторий:
+```bash
+git clone https://github.com/yourusername/hakles.git
+cd hakles
+```
 
-3. Install dependencies:
-   ```bash
-   pio lib install
-   ```
+2. Установите PlatformIO
 
-4. Build the firmware:
-   ```bash
-   pio run
-   ```
+3. Соберите прошивку:
+```bash
+pio run
+```
 
-5. Upload to ESP32:
-   ```bash
-   pio run --target upload
-   ```
+4. Загрузите на ESP32:
+```bash
+pio run --target upload
+```
 
-## Applications
+## Архитектура
 
-### DOOM
-A simplified pseudo-3D first-person shooter inspired by the classic DOOM game. Features raycasting-based rendering, enemy entities, and a heads-up display.
-
-### Slots
-A casino-style slot machine game where you can bet credits and spin the reels to win prizes.
-
-### WiFi Scanner
-Scans for available WiFi networks and displays information about them including signal strength and encryption type.
-
-### Explorer
-Browse files and directories on the SD card. View text file contents and navigate through directory structures.
-
-### Tamagotchi
-A virtual pet simulation where you can feed, play with, and clean your digital pet. The pet's status changes over time.
-
-### Stopwatch
-A simple stopwatch with start/stop, lap time recording, and reset functionality.
-
-### Calculator
-A basic calculator supporting addition, subtraction, multiplication, and division operations.
-
-## Controls
-
-- UP: Navigate up / Move forward (DOOM) / Feed pet (Tamagotchi) / Lap time (Stopwatch)
-- DOWN: Navigate down / Move backward (DOOM) / Play with pet (Tamagotchi) / Reset (Stopwatch)
-- LEFT: Turn left (DOOM) / Clean pet (Tamagotchi)
-- RIGHT: Turn right (DOOM)
-- OK: Select / Confirm / Start/Stop (Stopwatch)
-- BACK: Return / Cancel / Exit applications
-
-## File Structure
-
+### Структура файлов
 ```
 src/
-├── apps/              # Application implementations
-│   ├── Application.h          # Base application class
-│   ├── CalculatorApplication.* # Calculator app
-│   ├── DoomApplication.*       # DOOM game app
-│   ├── ExplorerApplication.*   # File explorer app
-│   ├── MenuApplication.*       # Main menu app
-│   ├── StartupScreen.*         # Startup screen app
-│   ├── StopwatchApplication.*  # Stopwatch app
-│   └── TamagotchiApplication.* # Virtual pet app
-├── core/              # Core system components
-│   ├── ApplicationManager.*    # App management
-│   ├── Button.*                # Button handling
-│   ├── Display.*               # Display abstraction
-│   └── Navigation.*            # Navigation system
-├── graphics/          # Graphics and bitmaps
-│   ├── bitmaps.*               # Bitmap definitions
-├── utils/             # Utility functions
-│   ├── logger.*                # Logging system
-├── config.h           # Configuration settings
-└── main.cpp           # Main entry point
+├── main.cpp              # Точка входа
+├── config.h              # Конфигурация
+├── core/                 # Ядро системы
+│   ├── ApplicationManager.*
+│   ├── Button.*
+│   ├── Display.*
+│   └── Navigation.*
+├── apps/                 # Приложения
+│   ├── Application.h     # Базовый интерфейс
+│   ├── MenuApplication.*
+│   ├── SettingsApplication.*
+│   ├── ExplorerApplication.*
+│   ├── EnhancedWifiScannerApplication.*
+│   ├── WiFiPacketCaptureApplication.*
+│   ├── WiFiDeauthAttackApplication.*
+│   ├── EvilPortalApplication.*
+│   ├── BluetoothScannerApplication.*
+│   ├── BluetoothAttackApplication.*
+│   ├── CC1101Application.*
+│   ├── IRTVOffApplication.*
+│   ├── BinaryCalculatorApplication.*
+│   └── StopwatchApplication.*
+├── graphics/             # Графика
+│   └── bitmaps.*
+└── utils/                # Утилиты
+    ├── logger.*
+    └── SerialCommandParser.*
 ```
 
-## Bitmap Icons
+### Основные компоненты
 
-All applications feature custom 16x16 pixel bitmap icons designed in the style of Flipper Zero:
-- DOOM: Skull icon
-- WiFi Scanner: WiFi signal icon
-- Explorer: File and folder icons
-- Tamagotchi: Pet icon
-- Stopwatch: Clock icon
-- Calculator: Calculator icon
-- Settings: Gear icon
+#### ApplicationManager
+Управляет всеми приложениями в системе.
 
-## Development
+```cpp
+class ApplicationManager {
+public:
+    void registerApplication(Application* app);
+    void switchToApplication(int index);
+    void update();
+    void render(Display* display);
+};
+```
 
-### Adding New Applications
+#### Display
+Обертка для работы с SH1106 дисплеем.
 
-1. Create a new application class inheriting from `Application`
-2. Implement the required methods (`render`, `handleNavigation`, etc.)
-3. Create a 16x16 bitmap icon
-4. Register the application in `main.cpp`
+```cpp
+class Display {
+public:
+    void initialize();
+    void clear();
+    void update();
+    void drawString(int16_t x, int16_t y, const char* text);
+    void drawBitmap(int16_t x, int16_t y, const uint8_t bitmap[], ...);
+};
+```
 
-### Customizing Display
+#### Navigation
+Управление кнопками и навигацией.
 
-The display system uses the Adafruit GFX library with a custom `Display` wrapper that provides:
-- Text rendering with color control
-- Bitmap drawing
-- Rectangle and line drawing
-- Clear screen functionality
+```cpp
+enum NavigationEvent {
+    NAV_NONE, NAV_UP, NAV_DOWN, NAV_LEFT, NAV_RIGHT,
+    NAV_OK, NAV_BACK, NAV_FUNCTION, NAV_BACK_LONG
+};
 
-## Testing
+class Navigation {
+public:
+    void update();
+    NavigationEvent getEvent();
+};
+```
 
-See [TESTING.md](TESTING.md) for detailed testing procedures for all applications and features.
+## Создание нового приложения
 
-## Documentation
+1. Создайте класс, наследующий `Application`:
 
-- [User Manual](USER_MANUAL.md) - Complete user guide
-- [Testing Plan](TESTING.md) - Comprehensive testing procedures
+```cpp
+// MyApp.h
+#include "Application.h"
 
-## License
+class MyApp : public Application {
+public:
+    void initialize() override;
+    void update() override;
+    void render(Display* display) override;
+    void cleanup() override;
+    
+    void onUpButton() override;
+    void onDownButton() override;
+    void onOkButton() override;
+    void onBackButton() override;
+    // ... другие кнопки
+    
+    const char* getName() override { return "My App"; }
+    bool isRunning() override { return running; }
+    
+private:
+    bool running;
+};
+```
 
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+2. Реализуйте методы в `.cpp` файле
 
-## Acknowledgments
+3. Зарегистрируйте в `main.cpp`:
 
-- Inspired by the Flipper Zero device
-- Uses Adafruit GFX and SH1106 libraries
-- DOOM rendering techniques based on classic raycasting algorithms
+```cpp
+#include "apps/MyApp.h"
 
-## Remote Control
+MyApp myApp;
 
-This firmware supports serial commands that can replace physical button presses, allowing you to control the device remotely through a serial interface. A Python GUI application is included to provide a graphical d-pad interface for sending these commands.
+void setup() {
+    // ...
+    appManager.registerApplication(&myApp);
+    // ...
+}
+```
 
-### ESP Controller Application
+## Приложения
 
-A Python GUI application (`esp_controller_gui.py`) is provided with:
-- Cross-shaped d-pad with UP, DOWN, LEFT, RIGHT buttons
-- OK button in the center
-- FUNCTION and BACK buttons
-- BACK LONG button for long press simulation
-- Serial communication to send commands to the ESP device
-- Automatic port detection
-- Keyboard shortcuts for all commands (Arrow keys, Enter, Escape, F1)
-- Visual connection status indicator
-- Device display visualization showing real-time screen content (128x64 pixels)
+### Системные
+- **StartupScreen** - Экран загрузки
+- **MenuApplication** - Главное меню
+- **SettingsApplication** - Настройки (батарея, переназначение кнопок)
 
-See [ESP_CONTROLLER_README.md](ESP_CONTROLLER_README.md) for detailed usage instructions.
+### WiFi инструменты
+- **EnhancedWifiScannerApplication** - Расширенный WiFi сканер
+- **WiFiPacketCaptureApplication** - Захват WiFi пакетов
+- **WiFiDeauthAttackApplication** - Deauth атака
+- **EvilPortalApplication** - Фальшивая точка доступа
 
-For the Python GUI controller, see [ESP_CONTROLLER_GUI_README.md](ESP_CONTROLLER_GUI_README.md).
+### Bluetooth инструменты
+- **BluetoothScannerApplication** - Сканер Bluetooth устройств
+- **BluetoothAttackApplication** - Bluetooth атаки
 
-### Supported Serial Commands
+### Радио инструменты
+- **CC1101Application** - Работа с CC1101 трансивером
+- **IRTVOffApplication** - ИК команды для выключения ТВ
 
-- `UP` - Simulate pressing the UP button
-- `DOWN` - Simulate pressing the DOWN button
-- `LEFT` - Simulate pressing the LEFT button
-- `RIGHT` - Simulate pressing the RIGHT button
-- `OK` - Simulate pressing the OK button
-- `BACK` - Simulate pressing the BACK button
-- `FUNCTION` - Simulate pressing the FUNCTION button
-- `BACK_LONG` - Simulate a long press on the BACK button
+### Утилиты
+- **ExplorerApplication** - Файловый менеджер
+- **BinaryCalculatorApplication** - Бинарный калькулятор
+- **StopwatchApplication** - Секундомер
 
-Commands are case-sensitive and should be sent via the serial interface (115200 baud rate) followed by a newline character.
+## Удаленное управление
 
-For detailed information about the serial command protocol, see [SERIAL_COMMANDS.md](SERIAL_COMMANDS.md).
+Устройство поддерживает управление через serial интерфейс (115200 baud).
 
-### Building Executables
+### Команды
+- `UP`, `DOWN`, `LEFT`, `RIGHT` - Навигация
+- `OK` - Подтверждение
+- `BACK` - Назад
+- `FUNCTION` - Функциональная кнопка
+- `BACK_LONG` - Длинное нажатие BACK
+- `GET_DISPLAY` - Получить содержимое дисплея
 
-See [BUILDING_EXECUTABLES.md](BUILDING_EXECUTABLES.md) for instructions on creating standalone executables for Windows, Linux, and Android.
+### Python GUI контроллер
 
-The Python controller can be built into standalone executables for easy distribution without requiring Python installation:
-- Windows (.exe) using PyInstaller or cx_Freeze
-- Linux executables using PyInstaller or cx_Freeze
-- Android APK using Kivy + Buildozer (requires conversion)
+Запустите GUI контроллер:
+```bash
+python esp_controller_gui.py
+```
+
+Или используйте скрипты:
+- Windows: `run_controller.bat`
+- Linux/macOS: `./run_controller.sh`
+
+Возможности:
+- Виртуальный D-pad
+- Визуализация дисплея в реальном времени (128x64)
+- Горячие клавиши (стрелки, Enter, Escape, F1)
+- Автоопределение порта
+
+## Тестирование
+
+Запустите тесты:
+```bash
+python -m pytest
+```
+
+Тестовые файлы:
+- `test_serial_command_parser.py` - Парсер команд
+- `test_navigation.py` - Навигация
+- `test_application_manager.py` - Менеджер приложений
+- `test_gui_controller.py` - GUI контроллер
+
+## Сборка исполняемых файлов
+
+### Windows
+```bash
+pyinstaller --onefile --windowed esp_controller_gui.py
+```
+
+### Linux
+```bash
+pyinstaller --onefile esp_controller_gui.py
+```
+
+Исполняемые файлы будут в папке `dist/`.
+
+## Конфигурация
+
+Основные настройки в `src/config.h`:
+
+```cpp
+// Пины дисплея
+#define OLED_SDA_PIN 21
+#define OLED_SCL_PIN 22
+
+// Пины кнопок
+#define BUTTON_UP_PIN 12
+#define BUTTON_DOWN_PIN 13
+// ...
+
+// Настройки
+#define BUTTON_DEBOUNCE_TIME 50
+#define DISPLAY_UPDATE_INTERVAL 50
+```
+
+## Управление памятью
+
+- Приложения создаются один раз и переиспользуются
+- Двойная буферизация дисплея
+- Дебаунсинг кнопок
+- Эффективное использование ресурсов ESP32
+
+## Отладка
+
+Используйте Serial для отладки:
+```cpp
+Serial.begin(115200);
+Serial.println("Debug message");
+```
+
+Мониторинг:
+```bash
+pio device monitor
+```
+
+## Лицензия
+
+MIT License - см. файл [LICENSE](LICENSE)
+
+## Документация
+
+- [USER_MANUAL.md](USER_MANUAL.md) - Руководство пользователя
+- [COMPREHENSIVE_DOCUMENTATION.md](COMPREHENSIVE_DOCUMENTATION.md) - Полная документация
+- [UI_DESIGN.md](UI_DESIGN.md) - Дизайн интерфейса
+- [CHANGELOG.md](CHANGELOG.md) - История изменений

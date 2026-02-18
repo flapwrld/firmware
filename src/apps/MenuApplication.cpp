@@ -2,90 +2,123 @@
 #include "../graphics/bitmaps.h"
 #include "../config.h"
 
-MenuApplication::MenuApplication() : running(false), selectedIndex(0), appManager(nullptr) {}
+MenuApplication::MenuApplication() : running(false), selectedIndex(0), appManager(nullptr), scrollOffset(0), lastUpdateTime(0) {}
 
 void MenuApplication::initialize() {
     running = true;
     selectedIndex = 0;
+    scrollOffset = 0;
+    lastUpdateTime = millis();
 }
 
 void MenuApplication::update() {
-    // Menu navigation is handled by button events
+    // Smooth scrolling animation
+    lastUpdateTime = millis();
 }
 
 void MenuApplication::render(Display* display) {
     display->clear();
     
-    // Draw title
-    display->drawString(0, 0, "Applications");
+    // Draw modern status bar
+    display->fillRect(0, 0, 128, 11, 1);
+    display->setTextColor(0, 1);
+    display->setTextSize(1);
+    display->drawString(2, 2, "MENU");
     
-    // Draw menu items
+    // Draw time (placeholder)
+    display->drawString(95, 2, "12:34");
+    display->setTextColor(1, 0);
+    
+    // Draw separator line
+    display->drawLine(0, 11, 128, 11, 1);
+    
+    // Draw menu items with modern card design
     if (appManager != nullptr) {
         int appCount = appManager->getApplicationCount();
-        int visibleApps = min(appCount, 5); // Show up to 5 apps at a time
-        int startIndex = max(0, selectedIndex - 2); // Center the selected item
-        startIndex = min(startIndex, appCount - visibleApps);
+        int visibleApps = 4; // Show 4 apps at a time
+        int startIndex = max(0, selectedIndex - 1);
+        startIndex = min(startIndex, max(0, appCount - visibleApps));
         
-        for (int i = 0; i < visibleApps; i++) {
+        for (int i = 0; i < visibleApps && (startIndex + i) < appCount; i++) {
             int appIndex = startIndex + i;
-            if (appIndex < appCount) {
-                Application* app = appManager->getApplication(appIndex);
-                int yPos = 15 + i * 10;
-                
-                // Highlight selected item
-                if (appIndex == selectedIndex) {
-                    display->drawRect(0, yPos - 1, OLED_WIDTH - 1, 9, 1);
-                }
-                
-                // Draw application name
-                display->drawString(25, yPos, app->getName());
-                
-                // Draw icon based on application name
-                const char* appName = app->getName();
-                if (strcmp(appName, "File Explorer") == 0) {
-                    display->drawBitmap(5, yPos, explorerIcon, EXPLORER_ICON_WIDTH, EXPLORER_ICON_HEIGHT, 1);
-                } else if (strcmp(appName, "WiFi Scanner") == 0) {
-                    display->drawBitmap(5, yPos, wifiScannerIcon, WIFI_SCANNER_ICON_WIDTH, WIFI_SCANNER_ICON_HEIGHT, 1);
-                } else if (strcmp(appName, "Tamagotchi") == 0) {
-                    display->drawBitmap(5, yPos, tamagotchiIcon, TAMAGOTCHI_ICON_WIDTH, TAMAGOTCHI_ICON_HEIGHT, 1);
-                } else if (strcmp(appName, "Stopwatch") == 0) {
-                    display->drawBitmap(5, yPos, stopwatchIcon, STOPWATCH_ICON_WIDTH, STOPWATCH_ICON_HEIGHT, 1);
-                } else if (strcmp(appName, "Calculator") == 0) {
-                    display->drawBitmap(5, yPos, calculatorIcon, CALCULATOR_ICON_WIDTH, CALCULATOR_ICON_HEIGHT, 1);
-                } else if (strcmp(appName, "DOOM") == 0) {
-                    display->drawBitmap(5, yPos, doomIcon, DOOM_ICON_WIDTH, DOOM_ICON_HEIGHT, 1);
-                } else if (strcmp(appName, "Slots") == 0) {
-                    display->drawBitmap(5, yPos, slotsIcon, SLOTS_ICON_WIDTH, SLOTS_ICON_HEIGHT, 1);
-                } else if (strcmp(appName, "Flappy Bird") == 0) {
-                    display->drawBitmap(5, yPos, flappyBirdIcon, FLAPPY_BIRD_ICON_WIDTH, FLAPPY_BIRD_ICON_HEIGHT, 1);
-                } else if (strcmp(appName, "Paint") == 0) {
-                    display->drawBitmap(5, yPos, paintIcon, PAINT_ICON_WIDTH, PAINT_ICON_HEIGHT, 1);
-                } else if (strcmp(appName, "WiFi Packet Capture") == 0) {
-                    display->drawBitmap(5, yPos, wifiPacketCaptureIcon, WIFI_PACKET_CAPTURE_ICON_WIDTH, WIFI_PACKET_CAPTURE_ICON_HEIGHT, 1);
-                } else if (strcmp(appName, "WiFi Deauth Attack") == 0) {
-                    display->drawBitmap(5, yPos, wifiDeauthAttackIcon, WIFI_DEAUTH_ATTACK_ICON_WIDTH, WIFI_DEAUTH_ATTACK_ICON_HEIGHT, 1);
-                } else if (strcmp(appName, "Enhanced WiFi Scanner") == 0) {
-                    display->drawBitmap(5, yPos, enhancedWifiScannerIcon, ENHANCED_WIFI_SCANNER_ICON_WIDTH, ENHANCED_WIFI_SCANNER_ICON_HEIGHT, 1);
-                } else if (strcmp(appName, "Evil Portal") == 0) {
-                    display->drawBitmap(5, yPos, evilPortalIcon, EVIL_PORTAL_ICON_WIDTH, EVIL_PORTAL_ICON_HEIGHT, 1);
-                } else if (strcmp(appName, "Bluetooth Scanner") == 0) {
-                    display->drawBitmap(5, yPos, bluetoothScannerIcon, BLUETOOTH_SCANNER_ICON_WIDTH, BLUETOOTH_SCANNER_ICON_HEIGHT, 1);
-                } else if (strcmp(appName, "Bluetooth Attack") == 0) {
-                    display->drawBitmap(5, yPos, bluetoothAttackIcon, BLUETOOTH_ATTACK_ICON_WIDTH, BLUETOOTH_ATTACK_ICON_HEIGHT, 1);
-                } else if (strcmp(appName, "Settings") == 0) {
-                    display->drawBitmap(5, yPos, settingsIcon, SETTINGS_ICON_WIDTH, SETTINGS_ICON_HEIGHT, 1);
-                } else if (strcmp(appName, "Button Test") == 0) {
-                    display->drawBitmap(5, yPos, buttonTestIcon, BUTTON_TEST_ICON_WIDTH, BUTTON_TEST_ICON_HEIGHT, 1);
-                } else if (strcmp(appName, "CC1101 Transceiver") == 0) {
-                    display->drawBitmap(5, yPos, cc1101Icon, CC1101_ICON_WIDTH, CC1101_ICON_HEIGHT, 1);
-                } else if (strcmp(appName, "Binary Calculator") == 0) {
-                    display->drawBitmap(5, yPos, binaryCalculatorIcon, BINARY_CALCULATOR_ICON_WIDTH, BINARY_CALCULATOR_ICON_HEIGHT, 1);
-                } else if (strcmp(appName, "IR TV Off") == 0) {
-                    display->drawBitmap(5, yPos, irIcon, IR_ICON_WIDTH, IR_ICON_HEIGHT, 1);
-                } else {
-                    display->drawBitmap(5, yPos, fileIcon, FILE_ICON_WIDTH, FILE_ICON_HEIGHT, 1);
-                }
+            Application* app = appManager->getApplication(appIndex);
+            int yPos = 14 + i * 13;
+            
+            // Skip startup screen in menu
+            if (strcmp(app->getName(), "Startup Screen") == 0) {
+                continue;
             }
+            
+            bool isSelected = (appIndex == selectedIndex);
+            
+            // Draw card background
+            if (isSelected) {
+                display->fillRoundRect(2, yPos, 124, 11, 3, 1);
+            } else {
+                display->drawRoundRect(2, yPos, 124, 11, 3, 1);
+            }
+            
+            // Draw icon with inverted color for selected
+            const char* appName = app->getName();
+            int iconX = 6;
+            int iconY = yPos + 2;
+            
+            // Icon mapping
+            if (strcmp(appName, "File Explorer") == 0) {
+                display->drawBitmap(iconX, iconY - 1, explorerIcon, 8, 8, isSelected ? 0 : 1);
+            } else if (strcmp(appName, "Enhanced WiFi Scanner") == 0) {
+                display->drawBitmap(iconX, iconY - 1, enhancedWifiScannerIcon, 8, 8, isSelected ? 0 : 1);
+            } else if (strcmp(appName, "WiFi Packet Capture") == 0) {
+                display->drawBitmap(iconX, iconY - 1, wifiPacketCaptureIcon, 8, 8, isSelected ? 0 : 1);
+            } else if (strcmp(appName, "WiFi Deauth Attack") == 0) {
+                display->drawBitmap(iconX, iconY - 1, wifiDeauthAttackIcon, 8, 8, isSelected ? 0 : 1);
+            } else if (strcmp(appName, "Evil Portal") == 0) {
+                display->drawBitmap(iconX, iconY - 1, evilPortalIcon, 8, 8, isSelected ? 0 : 1);
+            } else if (strcmp(appName, "Bluetooth Scanner") == 0) {
+                display->drawBitmap(iconX, iconY - 1, bluetoothScannerIcon, 8, 8, isSelected ? 0 : 1);
+            } else if (strcmp(appName, "Bluetooth Attack") == 0) {
+                display->drawBitmap(iconX, iconY - 1, bluetoothAttackIcon, 8, 8, isSelected ? 0 : 1);
+            } else if (strcmp(appName, "Settings") == 0) {
+                display->drawBitmap(iconX, iconY - 1, settingsIcon, 8, 8, isSelected ? 0 : 1);
+            } else if (strcmp(appName, "CC1101 Transceiver") == 0) {
+                display->drawBitmap(iconX, iconY - 1, cc1101Icon, 8, 8, isSelected ? 0 : 1);
+            } else if (strcmp(appName, "Binary Calculator") == 0) {
+                display->drawBitmap(iconX, iconY - 1, binaryCalculatorIcon, 8, 8, isSelected ? 0 : 1);
+            } else if (strcmp(appName, "IR TV Off") == 0) {
+                display->drawBitmap(iconX, iconY - 1, irIcon, 8, 8, isSelected ? 0 : 1);
+            } else if (strcmp(appName, "Stopwatch") == 0) {
+                display->drawBitmap(iconX, iconY - 1, stopwatchIcon, 8, 8, isSelected ? 0 : 1);
+            } else {
+                display->drawBitmap(iconX, iconY - 1, fileIcon, 8, 8, isSelected ? 0 : 1);
+            }
+            
+            // Draw application name with inverted color for selected
+            display->setTextSize(1);
+            display->setTextColor(isSelected ? 0 : 1, isSelected ? 1 : 0);
+            String displayName = String(appName);
+            if (displayName.length() > 18) {
+                displayName = displayName.substring(0, 15) + "...";
+            }
+            display->drawString(18, yPos + 2, displayName);
+            
+            // Draw arrow for selected item
+            if (isSelected) {
+                display->fillTriangle(118, yPos + 4, 118, yPos + 8, 122, yPos + 6, 0);
+            }
+            
+            // Reset text color
+            display->setTextColor(1, 0);
+        }
+    }
+    
+    // Draw scroll indicator
+    if (appManager != nullptr) {
+        int appCount = appManager->getApplicationCount();
+        if (appCount > 4) {
+            int scrollBarHeight = 40;
+            int scrollBarY = 14;
+            int scrollPos = (selectedIndex * scrollBarHeight) / appCount;
+            display->fillRect(127, scrollBarY + scrollPos, 1, 8, 1);
         }
     }
     
@@ -99,19 +132,33 @@ void MenuApplication::cleanup() {
 // Navigation handlers
 void MenuApplication::onUpButton() {
     if (appManager != nullptr && appManager->getApplicationCount() > 0) {
-        selectedIndex--;
-        if (selectedIndex < 0) {
-            selectedIndex = appManager->getApplicationCount() - 1;
-        }
+        do {
+            selectedIndex--;
+            if (selectedIndex < 0) {
+                selectedIndex = appManager->getApplicationCount() - 1;
+            }
+            // Skip startup screen
+            Application* app = appManager->getApplication(selectedIndex);
+            if (strcmp(app->getName(), "Startup Screen") != 0) {
+                break;
+            }
+        } while (true);
     }
 }
 
 void MenuApplication::onDownButton() {
     if (appManager != nullptr && appManager->getApplicationCount() > 0) {
-        selectedIndex++;
-        if (selectedIndex >= appManager->getApplicationCount()) {
-            selectedIndex = 0;
-        }
+        do {
+            selectedIndex++;
+            if (selectedIndex >= appManager->getApplicationCount()) {
+                selectedIndex = 0;
+            }
+            // Skip startup screen
+            Application* app = appManager->getApplication(selectedIndex);
+            if (strcmp(app->getName(), "Startup Screen") != 0) {
+                break;
+            }
+        } while (true);
     }
 }
 

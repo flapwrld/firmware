@@ -26,6 +26,14 @@ public:
     void setTextColor(uint16_t color, uint16_t background);
     void fillTriangle(int16_t x0, int16_t y0, int16_t x1, int16_t y1, int16_t x2, int16_t y2, uint16_t color);
     void getDisplayBuffer(uint8_t* buffer, size_t bufferSize);
+    
+    // Advanced UI functions
+    void drawRoundRect(int16_t x, int16_t y, int16_t w, int16_t h, int16_t r, uint16_t color);
+    void fillRoundRect(int16_t x, int16_t y, int16_t w, int16_t h, int16_t r, uint16_t color);
+    void setTextSize(uint8_t size);
+    void drawCenteredString(int16_t y, const char* text);
+    void drawCenteredString(int16_t y, String text);
+    void drawProgressBar(int16_t x, int16_t y, int16_t w, int16_t h, uint8_t progress);
 };
 
 #endif // DISPLAY_H

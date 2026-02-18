@@ -2,18 +2,41 @@
 #define SETTINGS_APPLICATION_H
 
 #include "Application.h"
-#include "graphics/bitmaps.h"
+#include <WiFi.h>
 
 class SettingsApplication : public Application {
 private:
     bool running;
-    int selectedSetting;
-    int batteryDisplayMode; // 0 = icon only, 1 = percentage
-    bool buttonRebindingMode;
-    int rebindingButtonIndex;
+    int selectedIndex;
+    int menuState; // 0 = main menu, 1 = wifi list, 2 = wifi password input
     
-    // Button mapping (default configuration)
-    int buttonMapping[7]; // UP, DOWN, LEFT, RIGHT, OK, BACK, FUNCTION
+    // WiFi settings
+    String wifiSSID;
+    String wifiPassword;
+    bool wifiConnected;
+    int wifiScanResults;
+    String wifiNetworks[20];
+    int wifiRSSI[20];
+    int selectedNetwork;
+    
+    // Password input
+    char passwordBuffer[64];
+    int passwordLength;
+    int cursorPosition;
+    char currentChar;
+    
+    // Menu items
+    static const int MENU_WIFI = 0;
+    static const int MENU_DISPLAY = 1;
+    static const int MENU_ABOUT = 2;
+    static const int MENU_COUNT = 3;
+    
+    void scanWiFiNetworks();
+    void connectToWiFi();
+    void drawMainMenu(Display* display);
+    void drawWiFiList(Display* display);
+    void drawPasswordInput(Display* display);
+    void drawAboutScreen(Display* display);
     
 public:
     SettingsApplication();
@@ -36,18 +59,9 @@ public:
     const char* getName() override;
     bool isRunning() override;
     
-    // Settings methods
-    void saveSettings();
-    void loadSettings();
-    int getBatteryDisplayMode();
-    void setBatteryDisplayMode(int mode);
-    int getButtonMapping(int buttonIndex);
-    void setButtonMapping(int buttonIndex, int newMapping);
-    void resetToDefaults();
-    int getMappedButtonPin(int buttonIndex);
+    // WiFi status
+    bool isWiFiConnected();
+    String getWiFiSSID();
 };
-
-// Global settings instance
-extern SettingsApplication settingsApp;
 
 #endif // SETTINGS_APPLICATION_H

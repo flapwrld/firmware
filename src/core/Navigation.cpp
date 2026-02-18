@@ -1,8 +1,4 @@
 #include "Navigation.h"
-#include "apps/SettingsApplication.h"
-
-// External settings application instance
-extern SettingsApplication settingsApplication;
 
 Navigation::Navigation(Button* buttonArray) {
     buttons = buttonArray;
@@ -31,41 +27,31 @@ NavigationEvent Navigation::getEvent() {
         return event;
     }
     
-    // Get the physical button index for the back button
-    int backButtonPhysicalIndex = settingsApplication.getButtonMapping(BUTTON_BACK_INDEX);
-    
-    // Check for long press on back button first
-    if (buttons[backButtonPhysicalIndex].wasLongPressed()) {
+    // Check for long press on back button first (button index 5)
+    if (buttons[5].wasLongPressed()) {
         return NAV_BACK_LONG;
     }
     
-    // Check for regular button events using mapped indices
-    int upButtonPhysicalIndex = settingsApplication.getButtonMapping(BUTTON_UP_INDEX);
-    int downButtonPhysicalIndex = settingsApplication.getButtonMapping(BUTTON_DOWN_INDEX);
-    int leftButtonPhysicalIndex = settingsApplication.getButtonMapping(BUTTON_LEFT_INDEX);
-    int rightButtonPhysicalIndex = settingsApplication.getButtonMapping(BUTTON_RIGHT_INDEX);
-    int okButtonPhysicalIndex = settingsApplication.getButtonMapping(BUTTON_OK_INDEX);
-    int functionButtonPhysicalIndex = settingsApplication.getButtonMapping(BUTTON_FUNCTION_INDEX);
-    
-    if (buttons[upButtonPhysicalIndex].wasPressed()) {
+    // Check for regular button events
+    if (buttons[0].wasPressed()) {
         return NAV_UP;
     }
-    if (buttons[downButtonPhysicalIndex].wasPressed()) {
+    if (buttons[1].wasPressed()) {
         return NAV_DOWN;
     }
-    if (buttons[leftButtonPhysicalIndex].wasPressed()) {
+    if (buttons[2].wasPressed()) {
         return NAV_LEFT;
     }
-    if (buttons[rightButtonPhysicalIndex].wasPressed()) {
+    if (buttons[3].wasPressed()) {
         return NAV_RIGHT;
     }
-    if (buttons[okButtonPhysicalIndex].wasPressed()) {
+    if (buttons[4].wasPressed()) {
         return NAV_OK;
     }
-    if (buttons[backButtonPhysicalIndex].wasPressed()) {
+    if (buttons[5].wasPressed()) {
         return NAV_BACK;
     }
-    if (buttons[functionButtonPhysicalIndex].wasPressed()) {
+    if (buttons[6].wasPressed()) {
         return NAV_FUNCTION;
     }
     
@@ -74,27 +60,25 @@ NavigationEvent Navigation::getEvent() {
 
 bool Navigation::isButtonPressed(int buttonIndex) {
     if (buttonIndex >= 0 && buttonIndex < 7) {
-        int physicalIndex = settingsApplication.getButtonMapping(buttonIndex);
-        return buttons[physicalIndex].isPressed();
+        return buttons[buttonIndex].isPressed();
     }
     return false;
 }
 
 bool Navigation::isButtonReleased(int buttonIndex) {
     if (buttonIndex >= 0 && buttonIndex < 7) {
-        int physicalIndex = settingsApplication.getButtonMapping(buttonIndex);
-        return buttons[physicalIndex].isReleased();
+        return buttons[buttonIndex].isReleased();
     }
     return false;
 }
 
 bool Navigation::isButtonLongPressed(int buttonIndex) {
     if (buttonIndex >= 0 && buttonIndex < 7) {
-        int physicalIndex = settingsApplication.getButtonMapping(buttonIndex);
-        return buttons[physicalIndex].isLongPressed();
+        return buttons[buttonIndex].isLongPressed();
     }
     return false;
 }
+
 // Methods to handle external events
 void Navigation::setExternalEvent(NavigationEvent event) {
     externalEvent = event;

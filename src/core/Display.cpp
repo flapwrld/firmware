@@ -113,3 +113,47 @@ void Display::getDisplayBuffer(uint8_t* buffer, size_t bufferSize) {
         memcpy(buffer, display_inst.getBuffer(), 1024);
     }
 }
+
+// Draw rounded rectangle
+void Display::drawRoundRect(int16_t x, int16_t y, int16_t w, int16_t h, int16_t r, uint16_t color) {
+    display_inst.drawRoundRect(x, y, w, h, r, color ? SH110X_WHITE : SH110X_BLACK);
+}
+
+// Fill rounded rectangle
+void Display::fillRoundRect(int16_t x, int16_t y, int16_t w, int16_t h, int16_t r, uint16_t color) {
+    display_inst.fillRoundRect(x, y, w, h, r, color ? SH110X_WHITE : SH110X_BLACK);
+}
+
+// Set text size
+void Display::setTextSize(uint8_t size) {
+    display_inst.setTextSize(size);
+}
+
+// Draw centered string
+void Display::drawCenteredString(int16_t y, const char* text) {
+    int16_t x1, y1;
+    uint16_t w, h;
+    display_inst.getTextBounds(text, 0, 0, &x1, &y1, &w, &h);
+    int16_t x = (128 - w) / 2;
+    display_inst.setCursor(x, y);
+    display_inst.print(text);
+}
+
+// Draw centered string (String version)
+void Display::drawCenteredString(int16_t y, String text) {
+    drawCenteredString(y, text.c_str());
+}
+
+// Draw progress bar
+void Display::drawProgressBar(int16_t x, int16_t y, int16_t w, int16_t h, uint8_t progress) {
+    // Draw border
+    drawRoundRect(x, y, w, h, 2, 1);
+    
+    // Calculate fill width
+    int16_t fillWidth = ((w - 4) * progress) / 100;
+    
+    // Draw fill
+    if (fillWidth > 0) {
+        fillRoundRect(x + 2, y + 2, fillWidth, h - 4, 1, 1);
+    }
+}

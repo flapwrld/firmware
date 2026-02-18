@@ -1,294 +1,334 @@
-# HAKLESMY Flipper Zero-like Device User Manual
+# HAKLES - Руководство пользователя
 
-## Table of Contents
-1. [Device Overview](#device-overview)
-2. [Hardware Setup](#hardware-setup)
-3. [Getting Started](#getting-started)
-4. [Navigation Controls](#navigation-controls)
-5. [Applications](#applications)
-   - [DOOM](#doom)
-   - [WiFi Scanner](#wifi-scanner)
-   - [Explorer](#explorer)
-   - [Tamagotchi](#tamagotchi)
-   - [Stopwatch](#stopwatch)
-   - [Calculator](#calculator)
-6. [SD Card Usage](#sd-card-usage)
-7. [Troubleshooting](#troubleshooting)
-8. [Remote Control](#remote-control)
+## Содержание
+1. [Обзор устройства](#обзор-устройства)
+2. [Настройка оборудования](#настройка-оборудования)
+3. [Начало работы](#начало-работы)
+4. [Управление](#управление)
+5. [Приложения](#приложения)
+6. [Использование SD карты](#использование-sd-карты)
+7. [Решение проблем](#решение-проблем)
+8. [Удаленное управление](#удаленное-управление)
 
-## Device Overview
+## Обзор устройства
 
-The HAKLESMY is a Flipper Zero-like device based on the ESP32 microcontroller with an SH1106 OLED display (128x64 pixels). It features a carousel-style menu system and several built-in applications for security research, entertainment, and utility purposes.
+HAKLES - это устройство для исследования безопасности на базе микроконтроллера ESP32 с OLED дисплеем SH1106 (128x64 пикселей). Устройство имеет систему меню и встроенные приложения для исследования безопасности WiFi, Bluetooth, работы с радиомодулями и утилиты.
 
-## Hardware Setup
+## Настройка оборудования
 
-### Components
-- ESP32 development board
-- SH1106 OLED display (128x64)
-- MicroSD card module
-- 7 push buttons (UP, DOWN, LEFT, RIGHT, OK, BACK, RESET)
-- Jumper wires
-- Breadboard (optional)
+### Компоненты
+- Плата ESP32
+- OLED дисплей SH1106 (128x64)
+- Модуль MicroSD карты
+- 7 кнопок (UP, DOWN, LEFT, RIGHT, OK, BACK, FUNCTION)
+- Провода
+- Макетная плата (опционально)
+- CC1101 модуль (опционально)
+- ИК светодиод (опционально)
 
-### Wiring Connections
-- Display SDA -> ESP32 GPIO21
-- Display SCL -> ESP32 GPIO22
-- SD Card MOSI -> ESP32 GPIO23
-- SD Card MISO -> ESP32 GPIO19
-- SD Card SCK -> ESP32 GPIO18
-- SD Card CS -> ESP32 GPIO5
-- UP Button -> ESP32 GPIO12
-- DOWN Button -> ESP32 GPIO14
-- LEFT Button -> ESP32 GPIO27
-- RIGHT Button -> ESP32 GPIO26
-- OK Button -> ESP32 GPIO25
-- BACK Button -> ESP32 GPIO33
-- RESET Button -> ESP32 RST
+### Подключение
+- Дисплей SDA -> ESP32 GPIO21
+- Дисплей SCL -> ESP32 GPIO22
+- SD MOSI -> ESP32 GPIO23
+- SD MISO -> ESP32 GPIO19
+- SD SCK -> ESP32 GPIO18
+- SD CS -> ESP32 GPIO5
+- Кнопка UP -> ESP32 GPIO12
+- Кнопка DOWN -> ESP32 GPIO13
+- Кнопка LEFT -> ESP32 GPIO14
+- Кнопка RIGHT -> ESP32 GPIO15
+- Кнопка OK -> ESP32 GPIO16
+- Кнопка BACK -> ESP32 GPIO17
+- Кнопка FUNCTION -> ESP32 GPIO18
 
-## Getting Started
+## Начало работы
 
-1. Insert a microSD card (formatted as FAT32) into the SD card module
-2. Connect the device to power via USB
-3. The device will boot and display the startup screen
-4. Press the OK button to enter the main menu
+1. Вставьте microSD карту (FAT32) в модуль SD карты
+2. Подключите устройство к питанию через USB
+3. Устройство загрузится и покажет экран запуска
+4. Нажмите кнопку OK для входа в главное меню
 
-## Navigation Controls
+## Управление
 
-- UP: Navigate up in menus, access menu in DOOM, feed pet in Tamagotchi
-- DOWN: Navigate down in menus, move forward in DOOM, play with pet in Tamagotchi
-- LEFT: Turn left in DOOM, clean pet in Tamagotchi
-- RIGHT: Turn right in DOOM
-- OK: Select items, confirm actions
-- BACK: Return to previous screen, cancel actions, exit applications
+- UP: Навигация вверх в меню
+- DOWN: Навигация вниз в меню
+- LEFT: Навигация влево (зависит от приложения)
+- RIGHT: Навигация вправо (зависит от приложения)
+- OK: Выбор, подтверждение действий
+- BACK: Возврат назад, отмена, выход из приложений
+- FUNCTION: Специальная функция (зависит от приложения)
+- BACK (долгое нажатие): Возврат в главное меню
 
-## Applications
+## Приложения
 
-### DOOM
+### Настройки (Settings)
 
-A simplified pseudo-3D first-person shooter game inspired by the classic DOOM.
+Настройка параметров устройства.
 
-**Controls:**
-- UP: Move forward
-- DOWN: Move backward
-- LEFT: Turn left
-- RIGHT: Turn right
-- UP (in game): Access menu
-- BACK: Return to main menu
+**Возможности:**
+- Отображение батареи (иконка/процент)
+- Переназначение кнопок
+- Сохранение настроек в EEPROM
 
-**Features:**
-- Raycasting-based 3D environment
-- Simple enemy entities
-- Health and ammo display
-- In-game menu system
+**Управление:**
+- UP/DOWN: Навигация по настройкам
+- LEFT/RIGHT: Изменение значений
+- OK: Сохранить настройки
+- BACK: Вернуться в меню
 
-### Slots
+### Файловый менеджер (Explorer)
 
-A casino-style slot machine game.
+Просмотр файлов и папок на SD карте.
 
-**Features:**
-- Three spinning reels with different symbols
-- Betting system with credits
-- Win detection and payout calculation
-- Simple and intuitive interface
+**Возможности:**
+- Список файлов и папок
+- Просмотр содержимого текстовых файлов
+- Навигация по директориям
 
-**Controls:**
-- UP: Increase bet amount
-- DOWN: Decrease bet amount
-- OK: Spin the reels
-- BACK: Return to main menu
+**Управление:**
+- UP/DOWN: Навигация по списку
+- OK: Открыть папку или файл
+- BACK: Вернуться в родительскую папку или меню
 
-### WiFi Scanner
+### Расширенный WiFi сканер (Enhanced WiFi Scanner)
 
-Scans for available WiFi networks and displays information about them.
+Сканирование WiFi сетей с расширенной информацией.
 
-**Features:**
-- Real-time WiFi scanning
-- Network strength indicators
-- Network information display (SSID, encryption type)
-- Simulated connection to networks
+**Возможности:**
+- Сканирование WiFi сетей в реальном времени
+- Отображение силы сигнала
+- Информация о шифровании
+- Детальная информация о сетях
 
-**Usage:**
-1. Launch the application
-2. Wait for scanning to complete
-3. Select a network to view details
-4. Press OK to simulate connection
+**Управление:**
+- UP/DOWN: Навигация по списку сетей
+- OK: Просмотр деталей
+- BACK: Вернуться в меню
 
-### Explorer
+### Захват WiFi пакетов (WiFi Packet Capture)
 
-Browse files and directories on the SD card.
+Перехват и анализ WiFi пакетов.
 
-**Features:**
-- File and directory listing
-- File content viewing
-- Directory navigation
+**Управление:**
+- OK: Старт/стоп захвата
+- BACK: Вернуться в меню
 
-**Usage:**
-1. Launch the application
-2. Navigate directories with UP/DOWN
-3. Select directories to enter with OK
-4. Select files to view contents
-5. Press BACK to return to parent directory
+### WiFi Deauth атака (WiFi Deauth Attack)
 
-### Tamagotchi
+Отправка deauthentication пакетов.
 
-A virtual pet simulation game.
+**Предупреждение:** Используйте только в образовательных целях и с разрешения владельца сети!
 
-**Features:**
-- Pet status monitoring (hunger, happiness, cleanliness)
-- Feeding, playing, and cleaning actions
-- Pet state changes over time
+**Управление:**
+- UP/DOWN: Выбор цели
+- OK: Запуск/остановка атаки
+- BACK: Вернуться в меню
 
-**Controls:**
-- UP: Feed pet
-- DOWN: Play with pet
-- LEFT: Clean pet
-- OK: Check pet status
-- BACK: Return to main menu
+### Фальшивая точка доступа (Evil Portal)
 
-### Stopwatch
+Создание поддельной WiFi точки доступа.
 
-A simple stopwatch application.
+**Предупреждение:** Используйте только в образовательных целях!
 
-**Features:**
-- Start/Stop functionality
-- Lap time recording
-- Reset function
+**Управление:**
+- OK: Запуск/остановка портала
+- BACK: Вернуться в меню
 
-**Controls:**
-- OK: Start/Stop timer
-- UP: Record lap time
-- DOWN: Reset timer
-- BACK: Return to main menu
+### Bluetooth сканер (Bluetooth Scanner)
 
-### Calculator
+Сканирование Bluetooth устройств.
 
-A basic calculator with arithmetic operations.
+**Возможности:**
+- Поиск Bluetooth устройств
+- Отображение MAC адресов
+- Информация о типе устройства
 
-**Features:**
-- Addition, subtraction, multiplication, division
-- Decimal point support
-- Clear function
+**Управление:**
+- UP/DOWN: Навигация по списку
+- OK: Просмотр деталей
+- BACK: Вернуться в меню
 
-**Controls:**
-- UP/DOWN: Navigate number pad
-- LEFT/RIGHT: Navigate operation buttons
-- OK: Select/confirm
-- BACK: Clear entry/return to menu
+### Bluetooth атака (Bluetooth Attack)
 
-## SD Card Usage
+Инструменты для тестирования Bluetooth безопасности.
 
-The device supports FAT32 formatted microSD cards up to 32GB.
+**Предупреждение:** Используйте только в образовательных целях!
 
-**Supported Operations:**
-- Reading files
-- Browsing directories
-- Viewing text file contents
+**Управление:**
+- UP/DOWN: Выбор типа атаки
+- OK: Запуск атаки
+- BACK: Вернуться в меню
 
-**File Recommendations:**
-- Keep filenames short (8.3 format recommended)
-- Use plain text files for best compatibility
-- Organize files in directories for easier navigation
+### CC1101 трансивер (CC1101 Transceiver)
 
-## Troubleshooting
+Работа с радиомодулем CC1101.
 
-### Display Issues
-- Check all wiring connections to the display
-- Ensure the display is properly powered
-- Verify SDA/SCL connections to GPIO21/GPIO22
+**Возможности:**
+- Прием и передача на различных частотах
+- Анализ радиосигналов
 
-### SD Card Problems
-- Ensure the SD card is properly inserted
-- Check SD card wiring connections
-- Verify the SD card is formatted as FAT32
-- Try a different SD card
+**Управление:**
+- UP/DOWN: Навигация
+- OK: Выбор функции
+- BACK: Вернуться в меню
 
-### Button Responsiveness
-- Check button wiring connections
-- Ensure buttons are properly connected to ground
-- Verify pull-up resistors are used or enabled
+### ИК выключатель ТВ (IR TV Off)
 
-### WiFi Scanner Not Finding Networks
-- Ensure the device is in an area with WiFi networks
-- Check that the WiFi antenna (if any) is properly connected
-- Restart the application
+Отправка ИК команд для выключения телевизоров.
 
-### Device Not Powering On
-- Check USB power connection
-- Verify the ESP32 board is functioning
-- Check for short circuits in wiring
+**Возможности:**
+- Поддержка различных брендов ТВ
+- Универсальные команды выключения
 
-### Firmware Issues
-- Re-flash the firmware using PlatformIO
-- Check for compilation errors
-- Verify all dependencies are installed
+**Управление:**
+- UP/DOWN: Выбор бренда
+- OK: Отправить команду
+- BACK: Вернуться в меню
 
-## Remote Control
+### Бинарный калькулятор (Binary Calculator)
 
-The HAKLESMY firmware supports serial commands that can replace physical button presses, allowing you to control the device remotely through a serial interface. This feature is useful for testing, automation, or controlling the device from a computer.
+Калькулятор для работы с двоичными числами.
 
-### Serial Command Interface
+**Возможности:**
+- Операции с двоичными числами
+- Конвертация между системами счисления
 
-The device accepts the following commands via the serial interface (115200 baud rate):
-- `UP` - Simulate pressing the UP button
-- `DOWN` - Simulate pressing the DOWN button
-- `LEFT` - Simulate pressing the LEFT button
-- `RIGHT` - Simulate pressing the RIGHT button
-- `OK` - Simulate pressing the OK button
-- `BACK` - Simulate pressing the BACK button
-- `FUNCTION` - Simulate pressing the FUNCTION button
-- `BACK_LONG` - Simulate a long press on the BACK button
+**Управление:**
+- UP/DOWN: Навигация
+- LEFT/RIGHT: Выбор операции
+- OK: Подтверждение
+- BACK: Очистка/возврат в меню
 
-Each command should be sent on its own line followed by a newline character. Commands are case-sensitive.
+### Секундомер (Stopwatch)
 
-For detailed information about the serial command protocol, see [SERIAL_COMMANDS.md](SERIAL_COMMANDS.md).
+Простой секундомер.
 
-### ESP Controller Application
+**Возможности:**
+- Старт/стоп
+- Запись промежуточного времени
+- Сброс
 
-A Python GUI application (`esp_controller_gui.py`) is provided to make remote control easier. It features:
-- Cross-shaped d-pad with UP, DOWN, LEFT, RIGHT buttons
-- OK button in the center
-- FUNCTION and BACK buttons
-- BACK LONG button for long press simulation
-- Serial communication to send commands to the ESP device
-- Automatic port detection
-- Keyboard shortcuts for all commands (Arrow keys, Enter, Escape, F1)
-- Visual connection status indicator (red/green circle)
-- Device display visualization showing real-time screen content (128x64 pixels)
+**Управление:**
+- OK: Старт/стоп
+- UP: Запись круга
+- DOWN: Сброс
+- BACK: Вернуться в меню
 
-To use the controller:
-1. Connect your ESP device to your computer via USB
-2. Install the required dependencies: `pip install -r requirements.txt`
-3. Run the controller application: `python esp_controller_gui.py`
-4. Select the appropriate serial port from the dropdown
-5. Set the baud rate to 115200 (default)
-6. Click "Connect"
-7. Use the d-pad buttons or keyboard shortcuts to control your device
+## Использование SD карты
 
-Keyboard shortcuts:
-- Arrow Keys: UP, DOWN, LEFT, RIGHT
+Устройство поддерживает microSD карты до 32GB в формате FAT32.
+
+**Поддерживаемые операции:**
+- Чтение файлов
+- Просмотр директорий
+- Просмотр текстовых файлов
+
+**Рекомендации:**
+- Используйте короткие имена файлов (формат 8.3)
+- Для лучшей совместимости используйте текстовые файлы
+- Организуйте файлы в папки для удобной навигации
+
+## Решение проблем
+
+### Проблемы с дисплеем
+- Проверьте все соединения с дисплеем
+- Убедитесь, что дисплей получает питание
+- Проверьте подключение SDA/SCL к GPIO21/GPIO22
+
+### Проблемы с SD картой
+- Убедитесь, что SD карта правильно вставлена
+- Проверьте соединения SD карты
+- Убедитесь, что SD карта отформатирована в FAT32
+- Попробуйте другую SD карту
+
+### Проблемы с кнопками
+- Проверьте соединения кнопок
+- Убедитесь, что кнопки правильно подключены к земле
+- Проверьте наличие подтягивающих резисторов
+
+### WiFi сканер не находит сети
+- Убедитесь, что устройство находится в зоне действия WiFi сетей
+- Проверьте подключение WiFi антенны (если есть)
+- Перезапустите приложение
+
+### Устройство не включается
+- Проверьте USB подключение
+- Убедитесь, что плата ESP32 работает
+- Проверьте отсутствие коротких замыканий
+
+### Проблемы с прошивкой
+- Перепрошейте устройство через PlatformIO
+- Проверьте ошибки компиляции
+- Убедитесь, что все зависимости установлены
+
+## Удаленное управление
+
+Прошивка HAKLES поддерживает управление через serial интерфейс, что позволяет управлять устройством удаленно с компьютера.
+
+### Serial команды
+
+Устройство принимает следующие команды через serial интерфейс (115200 baud):
+- `UP` - Нажатие кнопки UP
+- `DOWN` - Нажатие кнопки DOWN
+- `LEFT` - Нажатие кнопки LEFT
+- `RIGHT` - Нажатие кнопки RIGHT
+- `OK` - Нажатие кнопки OK
+- `BACK` - Нажатие кнопки BACK
+- `FUNCTION` - Нажатие кнопки FUNCTION
+- `BACK_LONG` - Длинное нажатие кнопки BACK
+- `GET_DISPLAY` - Получить содержимое дисплея
+
+Каждая команда должна быть отправлена на отдельной строке. Команды чувствительны к регистру.
+
+### Python GUI контроллер
+
+Предоставляется Python приложение с графическим интерфейсом (`esp_controller_gui.py`):
+
+**Возможности:**
+- Виртуальный D-pad с кнопками UP, DOWN, LEFT, RIGHT
+- Центральная кнопка OK
+- Кнопки FUNCTION и BACK
+- Кнопка BACK LONG для длинного нажатия
+- Автоопределение serial порта
+- Горячие клавиши (стрелки, Enter, Escape, F1)
+- Индикатор подключения
+- Визуализация дисплея в реальном времени (128x64 пикселей)
+
+**Использование:**
+1. Подключите ESP32 к компьютеру через USB
+2. Установите зависимости: `pip install -r requirements.txt`
+3. Запустите контроллер: `python esp_controller_gui.py`
+4. Выберите serial порт из списка
+5. Установите скорость 115200 (по умолчанию)
+6. Нажмите "Connect"
+7. Используйте кнопки или горячие клавиши
+
+**Горячие клавиши:**
+- Стрелки: UP, DOWN, LEFT, RIGHT
 - Enter: OK
 - Escape: BACK
 - F1: FUNCTION
 
-For detailed information about the GUI controller, see [ESP_CONTROLLER_GUI_README.md](ESP_CONTROLLER_GUI_README.md).
+**Быстрый запуск:**
+- Windows: `run_controller.bat`
+- Linux/macOS: `./run_controller.sh`
 
-### Command Line Interface
+### Сборка исполняемых файлов
 
-A command-line interface is also available for sending serial commands:
-1. Connect your ESP device to your computer via USB
-2. Run the command-line tool: `python test_serial_commands.py`
-3. Follow the prompts to select a serial port and enter commands
+Контроллер можно собрать в исполняемый файл:
 
-### Building Executables
+**Windows:**
+```bash
+pyinstaller --onefile --windowed esp_controller_gui.py
+```
 
-The ESP Controller application can be built into standalone executables for different platforms. See [BUILDING_EXECUTABLES.md](BUILDING_EXECUTABLES.md) for detailed instructions on creating executables for:
-- Windows (.exe)
-- Linux
-- Android
+**Linux:**
+```bash
+pyinstaller --onefile esp_controller_gui.py
+```
 
-This allows you to distribute the controller application without requiring users to install Python or dependencies.
+Исполняемые файлы будут в папке `dist/`.
 
-The Python controller can be built into standalone executables for easy distribution without requiring Python installation:
-- Windows (.exe) using PyInstaller or cx_Freeze
-- Linux executables using PyInstaller or cx_Freeze
-- Android APK using Kivy + Buildozer (requires conversion)
+## Предупреждение о безопасности
+
+Многие функции этого устройства предназначены только для образовательных целей и тестирования безопасности собственных сетей. Использование инструментов для атак на чужие сети без разрешения является незаконным. Всегда получайте письменное разрешение перед тестированием безопасности любой сети или устройства, которое вам не принадлежит.

@@ -3,13 +3,14 @@
 
 #include "Application.h"
 #include "core/ApplicationManager.h"
-#include "apps/SettingsApplication.h"
 
 class MenuApplication : public Application {
 private:
     bool running;
     int selectedIndex;
     ApplicationManager* appManager;
+    int scrollOffset;
+    unsigned long lastUpdateTime;
     
 public:
     MenuApplication();
