@@ -82,16 +82,20 @@ void SettingsApplication::drawMainMenu(Display* display) {
             display->drawRoundRect(2, yPos, 124, 11, 3, 1);
         }
         
-        // Draw icon
+        // Set text color based on selection
         display->setTextColor(isSelected ? 0 : 1, isSelected ? 1 : 0);
         
         if (i == MENU_WIFI) {
             display->drawBitmap(6, yPos + 2, wifiIcon, 8, 8, isSelected ? 0 : 1);
             // Show connection status
             if (wifiConnected) {
-                display->drawString(18, yPos + 2, "WiFi: " + wifiSSID);
+                String text = "WiFi: " + wifiSSID;
+                if (text.length() > 18) {
+                    text = text.substring(0, 15) + "...";
+                }
+                display->drawString(18, yPos + 2, text);
             } else {
-                display->drawString(18, yPos + 2, "WiFi: Not connected");
+                display->drawString(18, yPos + 2, "WiFi: Off");
             }
         } else if (i == MENU_DISPLAY) {
             display->drawBitmap(6, yPos + 2, settingsIcon, 8, 8, isSelected ? 0 : 1);
@@ -133,10 +137,12 @@ void SettingsApplication::drawWiFiList(Display* display) {
             
             if (isSelected) {
                 display->fillRoundRect(2, yPos, 124, 10, 2, 1);
-                display->setTextColor(0, 1);
             } else {
-                display->setTextColor(1, 0);
+                display->drawRoundRect(2, yPos, 124, 10, 2, 1);
             }
+            
+            // Set text color based on selection
+            display->setTextColor(isSelected ? 0 : 1, isSelected ? 1 : 0);
             
             // Draw WiFi icon
             display->drawBitmap(4, yPos + 1, wifiIcon, 8, 8, isSelected ? 0 : 1);

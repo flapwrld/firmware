@@ -6,7 +6,8 @@ MenuApplication::MenuApplication() : running(false), selectedIndex(0), appManage
 
 void MenuApplication::initialize() {
     running = true;
-    selectedIndex = 0;
+    // Start from index 1 to skip StartupScreen (index 0)
+    selectedIndex = 1;
     scrollOffset = 0;
     lastUpdateTime = millis();
 }
