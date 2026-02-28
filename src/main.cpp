@@ -9,6 +9,10 @@
 #include "apps/StartupScreen.h"
 #include "apps/MenuApplication.h"
 #include "apps/SettingsApplication.h"
+#include "apps/CounterApplication.h"
+#include "apps/TimerApplication.h"
+#include "apps/ClockApplication.h"
+#include "apps/InfoApplication.h"
 #include "graphics/bitmaps.h"
 #include <EEPROM.h>
 
@@ -28,6 +32,10 @@ ApplicationManager appManager;
 StartupScreen startupScreen;
 MenuApplication menuApplication;
 SettingsApplication settingsApplication;
+CounterApplication counterApp;
+TimerApplication timerApp;
+ClockApplication clockApp;
+InfoApplication infoApp;
 
 void setup() {
      // Initialize serial communication for debugging
@@ -49,6 +57,10 @@ void setup() {
     // Register applications
     appManager.registerApplication(&startupScreen);
     appManager.registerApplication(&menuApplication);
+    appManager.registerApplication(&counterApp);
+    appManager.registerApplication(&timerApp);
+    appManager.registerApplication(&clockApp);
+    appManager.registerApplication(&infoApp);
     appManager.registerApplication(&settingsApplication);
     
     // Initialize application manager
